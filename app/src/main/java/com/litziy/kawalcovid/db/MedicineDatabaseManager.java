@@ -23,8 +23,12 @@ public class MedicineDatabaseManager {
         db = new MedicineDatabaseHelper(mContext);
     }
 
-    SQLiteDatabase getWritableDatabase() {
+    public SQLiteDatabase getWritableDatabase() {
         return db.getWritableDatabase();
+    }
+
+    public SQLiteDatabase getReadableDatabase() {
+        return db.getReadableDatabase();
     }
 
     public int deleteByID(String id) {
@@ -34,11 +38,8 @@ public class MedicineDatabaseManager {
     }
 
     public void saveData(String name, String desc) {
-
         SQLiteDatabase writeableDB = db.getWritableDatabase();
-
         ContentValues contentValues = new ContentValues();
-
         contentValues.put(KEY_NAME, name);
         contentValues.put(KEY_DESC, desc);
 
@@ -48,13 +49,27 @@ public class MedicineDatabaseManager {
 
     }
 
-    Cursor queryAll() {
+    public Cursor queryAll() {
         SQLiteDatabase readableDb = db.getReadableDatabase();
         Cursor cursor = readableDb.rawQuery(
                 "SELECT * FROM table_medicine",
                 null
         );
         return cursor;
+    }
+
+    public Cursor queryById(String id) {
+        SQLiteDatabase readableDb = db.getReadableDatabase();
+        Cursor cursor = readableDb.rawQuery(
+                "SELECT * FROM table_medicine where id = '" + id + "'",
+                null
+        );
+        return cursor;
+    }
+
+    public long insert(ContentValues values) {
+        SQLiteDatabase writeableDb = db.getWritableDatabase();
+        return writeableDb.insert(TABLE_MEDICINE, null, values);
     }
 
     public ArrayList<Medicine> getData() {
@@ -77,6 +92,18 @@ public class MedicineDatabaseManager {
         }
 
         return medList;
+    }
+
+    /**
+     * Update data dalam database
+     *
+     * @param id     data dengan id berapa yang akan di update
+     * @param values nilai data baru
+     * @return int jumlah data yang ter-update
+     */
+    public int update(String id, ContentValues values) {
+        SQLiteDatabase writableDb = db.getWritableDatabase();
+        return writableDb.update(TABLE_MEDICINE, values, "_id = ?", new String[]{id});
     }
 
 
